@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import loginUser from './authService';
+import LoginModal, { LoginFunction } from './ModalPopup/LoginModal';
+
 
 function App() {
+
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [loginError, setLoginError] = useState<string | undefined>()
+
+  const toggleModal = () => {
+    setIsModalVisible(wasModalVisible => !wasModalVisible)
+  }
+
+
+  const onBackdropClick = () => {
+    setIsModalVisible(false)
+  }
+
+  const onLoginRequest: LoginFunction = async (args) => {
+    try {
+      const result = await loginUser(args)
+      console.log(result)
+    } catch (error: any) {
+      setLoginError(error)
+      console.log(error)
+      console.log(JSON.stringify(error))
+    }
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={toggleModal}>Login</button>
+      <LoginModal loginError={loginError} onClose={onBackdropClick} onLoginRequested={onLoginRequest} isModalVisible={isModalVisible} />
     </div>
   );
 }
+
 
 export default App;
